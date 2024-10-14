@@ -13,6 +13,7 @@ const EmployeeList: React.FC = () => {
   return (
     <div className="employee-list">
       {employees.map((employee) => (
+        countSubordinates(employee.id) > 0 &&
         <Employee
           key={employee.id}
           id={employee.id}

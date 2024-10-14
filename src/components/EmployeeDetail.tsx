@@ -1,16 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteEmployee, updateEmployee } from "../redux/employeeSlice";
 import { RootState } from "../redux/store";
 import { useForm } from "react-hook-form";
 
 const EmployeeDetail: React.FC = () => {
+  const [isEdit, setIsEdit] = useState(false);
   const employee = useSelector(
     (state: RootState) => state.employees.selectedEmployee
   );
   const dispatch = useDispatch();
   const { register, handleSubmit, reset } = useForm();
 
+  // Reset the form when a new employee is selected
   useEffect(() => {
     if (employee) {
       reset({
@@ -23,12 +25,21 @@ const EmployeeDetail: React.FC = () => {
     }
   }, [employee, reset]);
 
+  // Handle form submission (Save)
   const onSubmit = (data: any) => {
     if (employee) {
       dispatch(updateEmployee({ ...employee, ...data }));
+      setIsEdit(false); // Exit edit mode after saving
     }
   };
 
+  // Handle cancel button
+  const handleCancel = () => {
+    reset(); // Reset form fields to original values
+    setIsEdit(false); // Exit edit mode
+  };
+
+  // If no employee is selected, show a message
   if (!employee) return <p>Select an employee</p>;
 
   return (
@@ -47,34 +58,73 @@ const EmployeeDetail: React.FC = () => {
           <p>{employee.city}</p>
         </div>
       </div>
+
       <form className="employee-form" onSubmit={handleSubmit(onSubmit)}>
         <div className="form-group">
           <label>First Name</label>
-          <input className="form-input" {...register("first_name")} />
+          <input
+            className="form-input"
+            {...register("first_name")}
+            disabled={!isEdit} // Disable input when not in edit mode
+          />
         </div>
         <div className="form-group">
           <label>Last Name</label>
-          <input className="form-input" {...register("last_name")} />
+          <input
+            className="form-input"
+            {...register("last_name")}
+            disabled={!isEdit} // Disable input when not in edit mode
+          />
         </div>
         <div className="form-group">
           <label>Street Address</label>
-          <input className="form-input" {...register("street_address")} />
+          <input
+            className="form-input"
+            {...register("street_address")}
+            disabled={!isEdit} // Disable input when not in edit mode
+          />
         </div>
         <div className="form-group">
           <label>City</label>
-          <input className="form-input" {...register("city")} />
+          <input
+            className="form-input"
+            {...register("city")}
+            disabled={!isEdit} // Disable input when not in edit mode
+          />
         </div>
         <div className="form-group">
           <label>Bio</label>
-          <textarea className="form-textarea" {...register("bio")} />
+          <textarea
+            className="form-textarea"
+            {...register("bio")}
+            disabled={!isEdit} // Disable input when not in edit mode
+          />
         </div>
+
         <div className="form-actions">
-          <button type="submit" className="btn-save">
-            Save
-          </button>
-          <button type="button" className="btn-cancel" onClick={() => reset()}>
-            Cancel
-          </button>
+          {isEdit ? (
+            <>
+              <button type="submit" className="btn-save">
+                Save
+              </button>
+              <button
+                type="button"
+                className="btn-cancel"
+                onClick={handleCancel}
+              >
+                Cancel
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              className="btn-save"
+              onClick={() => setIsEdit(true)}
+            >
+              Edit
+            </button>
+          )}
+
           <button
             className="btn-delete"
             onClick={() => dispatch(deleteEmployee(employee.id))}

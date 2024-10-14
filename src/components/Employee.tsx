@@ -48,7 +48,7 @@ const Employee: React.FC<EmployeeProps> = ({
         onClick={() => dispatch(selectEmployee(id))}
       >
         <img src={profile_pic} alt={first_name} />
-        <div>
+        <div className="employee-base-info">
           <p>
             {first_name} {last_name}
           </p>
@@ -67,7 +67,8 @@ const Employee: React.FC<EmployeeProps> = ({
       {isExpanded && (
         <div className="subordinate-list">
           {subordinates.map((subordinate) => (
-            <div key={subordinate.id} className="subordinate-item">
+            <div key={subordinate.id} className="employee-list-item" onClick={() => dispatch(selectEmployee(subordinate.id))}>
+              <img src={subordinate.profile_pic} alt={subordinate.first_name} />
               <p>
                 {subordinate.first_name} {subordinate.last_name}
               </p>
